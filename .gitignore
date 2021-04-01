@@ -1,0 +1,15 @@
+/m4
+/aclocal.m4
+/autom4te.cache
+/build-aux
+/configure
+/config.log
+/config.status
+/configure.scan
+/stamp-h1
+.deps/
+.libs/
+Makefile.in
+Makefile
+*.tar.gz
+.dirstamp
