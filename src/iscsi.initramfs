@@ -1,0 +1,11 @@
+# The presence of this file (as /etc/iscsi/iscsi.initramfs) triggers
+# the open-iscsi initramfs construction hooks to copy this file inside
+# the initramfs as /etc/iscsi.initramfs.
+#
+# At boot time (within the initramfs), the open-iscsi hooks will
+# evaluate this file to determine whether and how to perform an iSCSI
+# boot.  We check for an iBFT; if found then we set ISCSI_AUTO=1 which
+# will trigger the open-iscsi hooks to perform an iBFT boot.
+
+modprobe iscsi_ibft
+[ -e /sys/firmware/ibft ] && ISCSI_AUTO=1
