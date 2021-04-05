@@ -1,0 +1,6 @@
+/.debhelper
+/autoreconf.*
+/debhelper-build-stamp
+/files
+/sanbootable
+/*.substvars

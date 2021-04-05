@@ -1,0 +1,11 @@
+Source: sanbootable
+Maintainer: Michael Brown <mbrown@fensystems.co.uk>
+Section: utils
+Priority: optional
+Standards-Version: 4.5.1
+
+Package: sanbootable
+Architecture: all
+Depends: initramfs-tools, open-iscsi
+Description: Make system SAN-bootable
+ Allow operating system to be booted from a SAN (e.g. iSCSI) disk
