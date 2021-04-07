@@ -1,0 +1,26 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Ensure that the getpwuid() call made by iscsid will not fail to
+# identify UID 0
+#
+# This requires the existence of libnss_files.so (which is dynamically
+# loaded at runtime by the C library and so not picked up as a
+# dependency of iscsid), and the existence of /etc/passwd.
+#
+# Without this, iscsid will fail to start within the finalrd,
+# resulting in a 30 second delay and a failure to log out from the
+# iSCSI target.
+
+set -e
+
+if [ "$1" = "setup" ]
+then
+    . /usr/share/initramfs-tools/hook-functions
+    copy_exec /usr/lib/*/libnss_files.so.*
+    exit 0
+fi
+
+if [ ! -e /etc/passwd ] ; then
+    echo "root:x:0:0:root:/:/bin/sh" > /etc/passwd
+fi
