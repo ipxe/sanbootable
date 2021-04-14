@@ -8,4 +8,9 @@
 # will trigger the open-iscsi hooks to perform an iBFT boot.
 
 modprobe iscsi_ibft
-[ -e /sys/firmware/ibft ] && ISCSI_AUTO=1
+
+if [ -e /sys/firmware/ibft ] ; then
+    ISCSI_AUTO=1
+    echo "Attempting iSCSI boot via iBFT:" \
+	 $(cat /sys/firmware/ibft/target*/target-name)
+fi
