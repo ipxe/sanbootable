@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# The Ubuntu cloud images utilise a spectacularly badly designed
+# mechanism that will unconditionally attempt to boot first without
+# any initramfs, falling back to using the initramfs only if the
+# initial boot attempt results in a kernel panic and instant reboot.
+# This demented cycle of failed-successful-failed-successful boots
+# continues for the entire lifetime of the system.
+#
+# This adds around 30 unnecessary seconds to the boot process and
+# results in extremely confusing console logs showing a kernel panic
+# for a system that is demonstrably up and running and accepting SSH
+# connections.
+#
+# Forcibly disable this insane mechanism by setting the GRUB
+# environment variable used to indicate that the system has already
+# attempted to boot without an initramfs.
+#
+exec /usr/bin/grub-editenv /boot/grub/grubenv set initrdfail=1

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+# If systemd is not running (e.g. because package has been installed
+# within a chroot jail), then run our ExecStart command manually
+#
+if [ ! -d /run/systemd/system ] ; then
+    /usr/bin/initrdfail-sanbootable
+fi
+
+#DEBHELPER#
