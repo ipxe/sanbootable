@@ -1,0 +1,126 @@
+name: Build
+
+on: [push]
+
+jobs:
+
+  dist:
+    name: Source
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Configure
+        run: |
+          ./autogen.sh
+          ./configure
+      - name: Get version
+        id: version
+        run: |
+          V=$(./configure --version | head -n 1 | cut -d" " -f3)
+          echo "::set-output name=version::${V}"
+      - name: Create distribution
+        run: |
+          make distcheck
+      - name: Upload source
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: sanbootable-${{ steps.version.outputs.version }}.tar.gz
+          if-no-files-found: error
+      - name: Create debian
+        run: |
+          tar cvzf \
+            sanbootable-debian-${{ steps.version.outputs.version }}.tar.gz \
+            debian
+      - name: Upload debian
+        uses: actions/upload-artifact@v2
+        with:
+          name: debuild
+          path: sanbootable-debian-${{ steps.version.outputs.version }}.tar.gz
+          if-no-files-found: error
+
+  deb:
+    name: Package (.deb)
+    needs:
+      - dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install packages
+        run: |
+          sudo apt update
+          sudo apt install -y -o Acquire::Retries=50 devscripts debhelper
+      - name: Download dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+      - name: Download debian
+        uses: actions/download-artifact@v2
+        with:
+          name: debuild
+      - name: Extract archives
+        run: |
+          tar xvzf sanbootable-${{ needs.dist.outputs.version }}.tar.gz
+          tar xvzf sanbootable-debian-${{ needs.dist.outputs.version }}.tar.gz \
+            -C sanbootable-${{ needs.dist.outputs.version }}
+      - name: Build .deb
+        run: |
+          cd sanbootable-${{ needs.dist.outputs.version }}
+          debuild
+      - name: Upload .deb
+        uses: actions/upload-artifact@v2
+        with:
+          name: deb
+          path: sanbootable_${{ needs.dist.outputs.version }}_all.deb
+          if-no-files-found: error
+
+  release:
+    name: Release
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    needs:
+      - dist
+      - deb
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check release version
+        run: |
+          TAGVER=${GITHUB_REF/refs\/tags\/v/}
+          [ "${TAGVER}" == "${{ needs.dist.outputs.version }}" ]
+      - name: Download dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+      - name: Download .deb
+        uses: actions/download-artifact@v2
+        with:
+          name: deb
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Version ${{ needs.dist.outputs.version }}
+          draft: false
+          prerelease: false
+      - name: Upload dist
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sanbootable-${{ needs.dist.outputs.version }}.tar.gz
+          asset_name: sanbootable-${{ needs.dist.outputs.version }}.tar.gz
+          asset_content_type: application/gzip
+      - name: Upload .deb
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sanbootable_${{ needs.dist.outputs.version }}_all.deb
+          asset_name: sanbootable_${{ needs.dist.outputs.version }}_all.deb
+          asset_content_type: application/vnd.debian.binary-package
