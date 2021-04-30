@@ -124,3 +124,12 @@ jobs:
           asset_path: sanbootable_${{ needs.dist.outputs.version }}_all.deb
           asset_name: sanbootable_${{ needs.dist.outputs.version }}_all.deb
           asset_content_type: application/vnd.debian.binary-package
+      - name: Upload .deb alias
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sanbootable_${{ needs.dist.outputs.version }}_all.deb
+          asset_name: sanbootable.deb
+          asset_content_type: application/vnd.debian.binary-package
