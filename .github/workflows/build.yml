@@ -76,12 +76,38 @@ jobs:
           path: sanbootable_${{ needs.dist.outputs.version }}_all.deb
           if-no-files-found: error
 
+  rpm:
+    name: Package (.rpm)
+    needs:
+      - dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install packages
+        run: |
+          sudo apt update
+          sudo apt install -y -o Acquire::Retries=50 file make rpm
+      - name: Download dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+      - name: Build .rpm
+        run: |
+          rpmbuild -tb --nodeps sanbootable-${{ needs.dist.outputs.version }}.tar.gz
+          cp ~/rpmbuild/RPMS/*/*.rpm ./
+      - name: Upload .rpm
+        uses: actions/upload-artifact@v2
+        with:
+          name: rpm
+          path: sanbootable-${{ needs.dist.outputs.version }}-1.noarch.rpm
+          if-no-files-found: error
+
   release:
     name: Release
     if: startsWith(github.event.ref, 'refs/tags/v')
     needs:
       - dist
       - deb
+      - rpm
     runs-on: ubuntu-latest
     steps:
       - name: Check release version
@@ -96,6 +122,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: deb
+      - name: Download .rpm
+        uses: actions/download-artifact@v2
+        with:
+          name: rpm
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -133,3 +163,21 @@ jobs:
           asset_path: sanbootable_${{ needs.dist.outputs.version }}_all.deb
           asset_name: sanbootable.deb
           asset_content_type: application/vnd.debian.binary-package
+      - name: Upload .rpm
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sanbootable-${{ needs.dist.outputs.version }}-1.noarch.rpm
+          asset_name: sanbootable-${{ needs.dist.outputs.version }}-1.noarch.rpm
+          asset_content_type: application/x-rpm
+      - name: Upload .rpm
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: sanbootable-${{ needs.dist.outputs.version }}-1.noarch.rpm
+          asset_name: sanbootable.rpm
+          asset_content_type: application/x-rpm
