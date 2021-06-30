@@ -6,6 +6,6 @@ dist_bin_SCRIPTS = initrdfail-sanbootable
 
 dist_finalrd_SCRIPTS = open-iscsi-sanbootable.finalrd
 
-dist_grubinitrdfallback_SCRIPTS = initrdfail-sanbootable.conf
+dist_grubinitrdfallback_DATA = initrdfail-sanbootable.conf
 
 dist_iscsiconf_SCRIPTS = iscsi.initramfs
