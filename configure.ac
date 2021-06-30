@@ -7,6 +7,9 @@ AM_INIT_AUTOMAKE([foreign subdir-objects tar-ustar])
 
 # Define distribution selections
 #
+AC_ARG_ENABLE([redhat],
+  AS_HELP_STRING([--enable-redhat],
+		 [enable all Red Hat features]))
 AC_ARG_ENABLE([ubuntu],
   AS_HELP_STRING([--enable-ubuntu],
 		 [enable all Ubuntu features]))
@@ -25,26 +28,33 @@ AC_ARG_ENABLE([initramfs],
 
 # Determine current distribution if none explicitly specified
 #
-AS_IF([test "x$enable_ubuntu" = "x"], [
+AS_IF([test "x$enable_redhat$enable_ubuntu" = "x"], [
   AS_IF([test -e /etc/lsb-release], [source /etc/lsb-release])
   AS_IF(AS_EXECUTABLE_P([/usr/bin/lsb_release]),
 	[DISTRIB_ID=$(/usr/bin/lsb_release -s -i)])
+  AS_IF([test -e /etc/redhat-release], [default_redhat=yes])
   AS_IF([test "x$DISTRIB_ID" = "xUbuntu"], [default_ubuntu=yes])
 ])
 
 # Test for individual distribution selections
 #
+AS_IF([test "x$enable_redhat" = "x"],
+      [enable_redhat=$default_redhat])
 AS_IF([test "x$enable_ubuntu" = "x"],
       [enable_ubuntu=$default_ubuntu])
 
 # Disable all features by default
 #
+default_dracut=no
 default_finalrd=no
 default_grub_initrd_fallback=no
 default_initramfs=no
 
 # Set feature defaults per distribution
 #
+AS_IF([test "x$enable_redhat" = "xyes"], [
+  default_dracut=yes
+])
 AS_IF([test "x$enable_ubuntu" = "xyes"], [
   default_finalrd=yes
   default_grub_initrd_fallback=yes
@@ -53,6 +63,8 @@ AS_IF([test "x$enable_ubuntu" = "xyes"], [
 
 # Test for individual feature selections
 #
+AS_IF([test "x$enable_dracut" = "x"],
+      [enable_dracut=$default_dracut])
 AS_IF([test "x$enable_finalrd" = "x"],
       [enable_finalrd=$default_finalrd])
 AS_IF([test "x$enable_grub_initrd_fallback" = "x"],
@@ -62,6 +74,8 @@ AS_IF([test "x$enable_initramfs" = "x"],
 
 # Define automake conditionals
 #
+AM_CONDITIONAL([DRACUT],
+	       [test "x$enable_dracut" = "xyes"])
 AM_CONDITIONAL([FINALRD],
 	       [test "x$enable_finalrd" = "xyes"])
 AM_CONDITIONAL([GRUBINITRDFALLBACK],
@@ -74,6 +88,7 @@ AM_CONDITIONAL([INITRAMFS],
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+  src/dracut/Makefile
   src/finalrd/Makefile
   src/grub-initrd-fallback/Makefile
   src/initramfs/Makefile
