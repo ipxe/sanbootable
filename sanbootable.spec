@@ -26,6 +26,9 @@ Allow operating system to be booted from a SAN (e.g. iSCSI) disk.
 %install
 %make_install
 
+%post
+dracut -v -f --regenerate-all
+
 %files
 %license LICENSE
 %doc README.md
