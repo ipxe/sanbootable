@@ -12,6 +12,7 @@ Source0:	https://github.com/ipxe/sanbootable/releases/download/v%{version}/%{nam
 BuildArch:	noarch
 BuildRequires:	make
 Requires:	dracut-network
+Requires:	iscsi-initiator-utils
 
 %description
 Allow operating system to be booted from a SAN (e.g. iSCSI) disk.
