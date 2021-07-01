@@ -24,7 +24,15 @@ either a local disk or an iSCSI target.
 
 ## Installation
 
-### Ubuntu
+### RHEL/CentOS/Fedora
+
+Download and install the latest version of
+[`sanbootable.rpm`][sanbootable.rpm]:
+```
+sudo rpm -Uvh https://github.com/ipxe/sanbootable/releases/latest/download/sanbootable.rpm
+```
+
+### Ubuntu/Debian
 
 Download and install the latest version of
 [`sanbootable.deb`][sanbootable.deb]:
@@ -45,4 +53,5 @@ will automatically adjust the system configuration as needed.
 
 
 [ipxe]: https://ipxe.org
+[sanbootable.rpm]: https://github.com/ipxe/sanbootable/releases/latest/download/sanbootable.rpm
 [sanbootable.deb]: https://github.com/ipxe/sanbootable/releases/latest/download/sanbootable.deb
