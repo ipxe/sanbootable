@@ -1,7 +1,7 @@
 %define dracutlibdir %{_prefix}/lib/dracut
 
 Name:		sanbootable
-Version:	0.2
+Version:	0.3
 Release:	1%{?dist}
 Summary:	SAN bootability package
 
@@ -39,5 +39,9 @@ dracut -v -f --regenerate-all
 %{dracutlibdir}/modules.d/95sanbootable/sanbootable-cmdline.sh
 
 %changelog
+* Thu Jul  1 2021 Michael Brown <mbrown@fensystems.co.uk> - 0.3-1
+- Regenerate initramfs after installation or upgrade
+- Add explicit requirement on iscsi-initiator-utils
+
 * Thu Jul  1 2021 Michael Brown <mbrown@fensystems.co.uk> - 0.2-1
 - Initial release
