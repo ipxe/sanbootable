@@ -1,4 +1,10 @@
-sanbootable (0.1) UNRELEASED; urgency=medium
+sanbootable (0.2) UNRELEASED; urgency=medium
+
+  * Add multi-distribution support
+
+ -- Michael Brown <mbrown@fensystems.co.uk>  Thu, 01 Jul 2021 14:15:47 +0100
+
+sanbootable (0.1) unstable; urgency=medium
 
   * Initial release.
 

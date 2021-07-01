@@ -1,7 +1,7 @@
 %define dracutlibdir %{_prefix}/lib/dracut
 
 Name:		sanbootable
-Version:	0.1
+Version:	0.2
 Release:	1%{?dist}
 Summary:	SAN bootability package
 
@@ -35,5 +35,5 @@ Allow operating system to be booted from a SAN (e.g. iSCSI) disk.
 %{dracutlibdir}/modules.d/95sanbootable/sanbootable-cmdline.sh
 
 %changelog
-* Wed Jun 30 2021 Michael Brown <mbrown@fensystems.co.uk>
+* Thu Jul  1 2021 Michael Brown <mbrown@fensystems.co.uk> - 0.2-1
 - Initial release
