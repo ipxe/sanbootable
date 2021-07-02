@@ -29,7 +29,7 @@ either a local disk or an iSCSI target.
 Download and install the latest version of
 [`sanbootable.rpm`][sanbootable.rpm]:
 ```
-sudo rpm -Uvh https://github.com/ipxe/sanbootable/releases/latest/download/sanbootable.rpm
+sudo yum install https://github.com/ipxe/sanbootable/releases/latest/download/sanbootable.rpm
 ```
 
 ### Ubuntu/Debian
