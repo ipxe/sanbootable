@@ -20,7 +20,7 @@ jobs:
         id: version
         run: |
           V=$(./configure --version | head -n 1 | cut -d" " -f3)
-          echo "::set-output name=version::${V}"
+          echo "version=${V}" >> $GITHUB_OUTPUT
       - name: Create distribution
         run: |
           make distcheck
